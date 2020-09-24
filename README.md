@@ -6,8 +6,8 @@
 ```javascript
 const { parseCron } = require('mi-cron');
 
-console.log(parseCron.nextDate('*/5 6-12 * 3 *').toUTCString());
-// `Fri, 01 Jan 2021 06:00:00`
+console.log(parseCron.nextDate('*/5 6-12 3 3 *').toUTCString());
+// Wed, 03 Mar 2021 06:00:00
 ```
 
 This is a microscopic (>2KB gzipped) parser for [standard cron expressions](https://en.wikipedia.org/wiki/Cron#CRON_expression).
