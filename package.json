@@ -2,7 +2,7 @@
   "scripts": {
     "build": "tsc",
     "coverage": "nyc npm test",
-    "coverage-report": "npm run coverage && nyc report --reporter=text-lcov | codecov --pipe",
+    "coverage-report": "npm run coverage && nyc report --reporter=text-lcov | codecov --pipe --disable=gcov",
     "lint": "eslint . --ext .ts",
     "test": "npm run build && mocha",
     "test:watch": "nodemon -e js,ts --watch . --watch test --ignore index.js --exec npm run test"
