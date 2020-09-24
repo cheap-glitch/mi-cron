@@ -1,0 +1,15 @@
+{
+  "files": ["index.ts"],
+  "compilerOptions": {
+    "outDir":              ".",
+    "module":              "commonjs",
+    "target":              "es2018",
+    "lib":                 ["es2019"],
+    "downlevelIteration":  true,
+    "removeComments":      true,
+    "noImplicitAny":       true,
+    "noImplicitReturns":   true,
+    "noImplicitThis":      true,
+    "noImplicitUseStrict": true
+  }
+}
