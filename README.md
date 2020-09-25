@@ -21,7 +21,7 @@ npm i mi-cron
 
 ## API
 
-#### parseCron(exp: string): CronSchedule
+### parseCron(exp: string): CronSchedule
 Parses a standard cron expression. Supports:
  * globs (`*`)
  * ranges (`0-30`, `mon-fri`)
@@ -34,11 +34,10 @@ Does NOT support:
  * year field
  * `@reboot`
 
-Returns an  object with  all possible  values for  each fields  (minutes, hours,
-days, months  and days  of week),  or `undefined` if  the expression  is invalid
-(wrong syntax, unsupported instruction, impossible range, etc).
+Returns an object with all possible values for each field (minutes, hours, days,
+months and days of the week), or `undefined` if the expression is invalid (wrong
+syntax, unsupported instruction, impossible range, etc).
 
-Example:
 ```javascript
 const { parseCron } = require('mi-cron');
 
@@ -52,13 +51,12 @@ console.log(parseCron('*/5 6-10 1,15 * wed'));
 // }
 ```
 
-#### parseCron.nextDate(exp: string | CronSchedule, from: Date = new Date.now()): Date
-Take a cron schedule or an expression and returns the next date that matches the
+### parseCron.nextDate(exp: string | CronSchedule, from: Date = new Date.now()): Date
+Takes a cron schedule  or expression and returns the next  date that matches the
 schedule, or  `undefined` if the expression  is invalid. If given  a datetime as
-the  second argument,  it  will start  the computation  from  this date  forward
-(otherwise it will use the current datetime at the moment it's called).
+the second argument, it will start  the computation from this time (otherwise it
+will use the current datetime at the moment it's called).
 
-Examples:
 ```javascript
 const { parseCron } = require('mi-cron');
 
@@ -74,8 +72,8 @@ for (let i=0; i<5; i++) {
 ```
 
 ## Related
- * [crontab.guru](https://crontab.guru/): an interactive cron schedule editor
- * [Description of the crontab format](https://crontab.guru/crontab.5.html)
+ * [crontab.guru](https://crontab.guru/), an interactive cron schedule editor
+ * [A description of the crontab format](https://crontab.guru/crontab.5.html)
  * [Best practices for cron](https://www.endpoint.com/blog/2008/12/08/best-practices-for-cron)
 
 ## License
