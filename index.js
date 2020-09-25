@@ -1,7 +1,7 @@
 /*!
  * mi-cron
  *
- * A tiny parser for standard cron expressions.
+ * A microscopic parser for standard cron expressions.
  *
  * Copyright (c) 2020-present, cheap glitch
  * This software is distributed under the ISC license
@@ -40,30 +40,6 @@ function parseCron(line) {
     return null;
 }
 exports.parseCron = parseCron;
-parseCron.nextDate = function (schedule, from = new Date()) {
-    schedule = typeof schedule == 'string' ? parseCron(schedule) : schedule;
-    if (schedule === null) {
-        return null;
-    }
-    const date = {
-        minutes: from.getUTCMinutes(),
-        hours: from.getUTCHours(),
-        days: from.getUTCDate(),
-        months: from.getUTCMonth() + 1,
-        years: from.getUTCFullYear(),
-    };
-    const dateElems = Object.keys(date);
-    for (const [elem, nextElem] of dateElems.slice(0, -1).map(e => [e, dateElems[dateElems.indexOf(e) + 1]])) {
-        date[elem] = schedule[elem].find(elem == 'minutes' ? (time => time > date[elem]) : (time => time >= date[elem]));
-        if (date[elem] === undefined) {
-            date[elem] = schedule[elem][0],
-                date[nextElem]++;
-        }
-    }
-    return new Date(Date.UTC(date.years, date.months - 1, date.days, date.hours, date.minutes));
-};
-const bound = '(\\d{1,2}|[a-z]{3})';
-const rangePattern = new RegExp(`^${bound}(?:-${bound})?$`, 'i');
 function parseField(field, min, max, aliases = []) {
     const values = Array.from(new Set(field.split(',').flatMap(item => {
         const [exp, stepStr = '1'] = item.split('/');
@@ -88,6 +64,8 @@ function parseField(field, min, max, aliases = []) {
     values.sort((a, b) => a - b);
     return values;
 }
+const bound = '(\\d{1,2}|[a-z]{3})';
+const rangePattern = new RegExp(`^${bound}(?:-${bound})?$`, 'i');
 function parseRangeBoundary(bound, min, max, aliases = []) {
     if (!bound) {
         return null;
@@ -97,6 +75,36 @@ function parseRangeBoundary(bound, min, max, aliases = []) {
     }
     const value = parseInt(bound, 10);
     return (!Number.isNaN(value) && min <= value && value <= max) ? value : null;
+}
+parseCron.nextDate = function (schedule, from = new Date()) {
+    schedule = typeof schedule == 'string' ? parseCron(schedule) : schedule;
+    if (schedule === null) {
+        return null;
+    }
+    const date = {
+        minutes: from.getUTCMinutes(),
+        hours: from.getUTCHours(),
+        days: from.getUTCDate(),
+        months: from.getUTCMonth() + 1,
+        years: from.getUTCFullYear(),
+    };
+    findNextTime(schedule, date, 'minutes', 'hours');
+    findNextTime(schedule, date, 'hours', 'days');
+    do {
+        findNextTime(schedule, date, 'days', 'months');
+        findNextTime(schedule, date, 'months', 'years');
+    } while (!schedule.weekDays.includes(cronDateToUTC(date).getUTCDay()) && ++date.days);
+    return cronDateToUTC(date);
+};
+function findNextTime(schedule, date, elem, nextElem) {
+    date[elem] = schedule[elem].find(elem == 'minutes' ? (time => time > date[elem]) : (time => time >= date[elem]));
+    if (date[elem] === undefined) {
+        date[elem] = schedule[elem][0],
+            date[nextElem]++;
+    }
+}
+function cronDateToUTC(date) {
+    return new Date(Date.UTC(date.years, date.months - 1, date.days, date.hours, date.minutes));
 }
 function range(start, stop, step = 1) {
     return Array.from({ length: Math.floor((stop - start) / step) + 1 }).map((_, i) => start + i * step);

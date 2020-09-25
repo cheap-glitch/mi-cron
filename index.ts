@@ -2,14 +2,28 @@
 /*!
  * mi-cron
  *
- * A tiny parser for standard cron expressions.
+ * A microscopic parser for standard cron expressions.
  *
  * Copyright (c) 2020-present, cheap glitch
- * This software is distributed under ISC license
+ * This software is distributed under the ISC license
  */
 
 interface CronSchedule {
-	[index: string]: number[],
+	readonly minutes:  number[],
+	readonly hours:    number[],
+	readonly days:     number[],
+	readonly months:   number[],
+	readonly weekDays: number[],
+	[prop: string]:    number[],
+}
+
+interface CronDate {
+	minutes:           number,
+	hours:             number,
+	days:              number,
+	months:            number,
+	years:             number,
+	[prop: string]:    number,
 }
 
 const shorthands: { [index: string]: string } = {
@@ -50,44 +64,6 @@ export function parseCron(line: string): CronSchedule | null {
 	return null;
 }
 
-// Return the closest date and time matched by the cron schedule (or `null` if the schedule is deemed invalid)
-// @TODO: take the week day into account
-parseCron.nextDate = function(schedule: string | CronSchedule, from = new Date()): Date {
-	schedule = typeof schedule == 'string' ? parseCron(schedule) : schedule;
-	if (schedule === null) {
-		return null;
-	}
-
-	const date: { [index: string]: number } = {
-		minutes: from.getUTCMinutes(),
-		hours:   from.getUTCHours(),
-		days:    from.getUTCDate(),
-		months:  from.getUTCMonth() + 1,
-		years:   from.getUTCFullYear(),
-	};
-	const dateElems = Object.keys(date);
-
-	// Loop over the date elements (excluding the year)
-	for (const [elem, nextElem] of dateElems.slice(0, -1).map(e => [e, dateElems[dateElems.indexOf(e) + 1]])) {
-		// Try to find the next incoming time
-		// Perform a strict greater-than check for the minutes only as we always consider the current minute to be passed already
-		date[elem] = schedule[elem].find(elem == 'minutes' ? (time => time > date[elem]) : (time => time >= date[elem]));
-
-		// If none is found, restart from the beginning of the list and increment the next date element
-		if (date[elem] === undefined) {
-			date[elem] = schedule[elem][0],
-			// We can just increment without worrying about boundaries
-			// JavaScript will just fix incorrect dates magically \o/
-			date[nextElem]++;
-		}
-	}
-
-	return new Date(Date.UTC(date.years, date.months - 1, date.days, date.hours, date.minutes));
-}
-
-const bound = '(\\d{1,2}|[a-z]{3})'
-const rangePattern = new RegExp(`^${bound}(?:-${bound})?$`, 'i');
-
 function parseField(field: string, min: number, max: number, aliases: string[] = []): number[] | null {
 	// Parse every item of the comma-separated list, merge the values and remove duplicates
 	const values = Array.from(new Set(field.split(',').flatMap(item => {
@@ -124,6 +100,9 @@ function parseField(field: string, min: number, max: number, aliases: string[] =
 	return values;
 }
 
+const bound = '(\\d{1,2}|[a-z]{3})'
+const rangePattern = new RegExp(`^${bound}(?:-${bound})?$`, 'i');
+
 function parseRangeBoundary(bound: string, min: number, max: number, aliases: string[] = []): number | null {
 	if (!bound) {
 		return null;
@@ -136,6 +115,56 @@ function parseRangeBoundary(bound: string, min: number, max: number, aliases: st
 	const value = parseInt(bound, 10);
 
 	return (!Number.isNaN(value) && min <= value && value <= max) ? value : null;
+}
+
+// Return the closest date and time matched by the cron schedule (or `null` if the schedule is deemed invalid)
+parseCron.nextDate = function(schedule: string | CronSchedule, from = new Date()): Date {
+	schedule = typeof schedule == 'string' ? parseCron(schedule) : schedule;
+	if (schedule === null) {
+		return null;
+	}
+
+	const date: CronDate = {
+		minutes: from.getUTCMinutes(),
+		hours:   from.getUTCHours(),
+		// Days are numbered from 1 to 31...
+		days:    from.getUTCDate(),
+		// ...but for whatever reason months are numbered from 0 to 11
+		months:  from.getUTCMonth() + 1,
+		years:   from.getUTCFullYear(),
+	};
+
+	// Find the next suitable minute and hour
+	findNextTime(schedule, date, 'minutes', 'hours');
+	findNextTime(schedule, date, 'hours',   'days');
+
+	// Find the next suitable day and month
+	do {
+		findNextTime(schedule, date, 'days',   'months');
+		findNextTime(schedule, date, 'months', 'years');
+	// Ensure the selected day is one of the possible weekdays
+	} while (!schedule.weekDays.includes(cronDateToUTC(date).getUTCDay()) && ++date.days);
+
+	return cronDateToUTC(date);
+}
+
+// Try to find the next incoming time
+function findNextTime(schedule: CronSchedule, date: CronDate, elem: string, nextElem: string): void {
+	// Perform a strict greater-than check for the minutes only
+	// as we always consider the current minute to be passed already
+	date[elem] = schedule[elem].find(elem == 'minutes' ? (time => time > date[elem]) : (time => time >= date[elem]));
+
+	if (date[elem] === undefined) {
+		// If no fitting time is found, restart from the beginning of the list and increment the next date element
+		date[elem] = schedule[elem][0],
+		// We can just increment without worrying about boundaries
+		// JavaScript will just fix incorrect dates magically \o/
+		date[nextElem]++;
+	}
+}
+
+function cronDateToUTC(date: CronDate): Date {
+	return new Date(Date.UTC(date.years, date.months - 1, date.days, date.hours, date.minutes));
 }
 
 function range(start: number, stop: number, step = 1): number[] | null {
