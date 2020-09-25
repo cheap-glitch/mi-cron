@@ -1,7 +1,6 @@
 # mi-cron
 ![license badge](https://badgen.net/github/license/cheap-glitch/mi-cron?color=green)
 ![latest release badge](https://badgen.net/github/release/cheap-glitch/mi-cron?color=green)
-[![codecov badge](https://codecov.io/gh/cheap-glitch/mi-cron/branch/main/graph/badge.svg)](https://codecov.io/gh/cheap-glitch/mi-cron)
 
 ```javascript
 const { parseCron } = require('mi-cron');
@@ -10,8 +9,10 @@ console.log(parseCron.nextDate('*/5 6-12 3 3 *').toUTCString());
 // Wed, 03 Mar 2021 06:00:00
 ```
 
-This is a microscopic (>2KB gzipped) parser for [standard cron expressions](https://en.wikipedia.org/wiki/Cron#CRON_expression).
-It also supports a few non-standard but convenient features, such as `@`-shorthands (e.g. `@daily`) and step (e.g. `*/10`).
+This is a microscopic (~1KB minified & gzipped) parser for [standard cron expressions](https://en.wikipedia.org/wiki/Cron#CRON_expression).
+It  also  supports   a  few  non-standard  but  convenient   features,  such  as
+@-shorthands (e.g. `@daily`)  and steps (e.g. `*/10`), and can  compute the next
+scheduled date for a given expression.
 
 ## Installation
 ```shell
@@ -19,10 +20,66 @@ npm i mi-cron
 ```
 
 ## API
-TODO
+
+#### parseCron(exp: string): CronSchedule
+Parses a standard cron expression. Supports:
+ * globs (`*`)
+ * ranges (`0-30`, `mon-fri`)
+ * steps (`*/3`, `20-31/2`)
+ * lists (`1,15`, `0-10,20-30/2`)
+ * @-shorthands (`@weekly`)
+
+Does NOT support:
+ * `L`, `W`, `#`, `?`, `H`
+ * year field
+ * `@reboot`
+
+Returns an  object with  all possible  values for  each fields  (minutes, hours,
+days, months  and days  of week),  or `undefined` if  the expression  is invalid
+(wrong syntax, unsupported instruction, impossible range, etc).
+
+Example:
+```javascript
+const { parseCron } = require('mi-cron');
+
+console.log(parseCron('*/5 6-10 1,15 * wed'));
+// {
+// 	minutes:  [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55],
+// 	hours:    [6, 7, 8, 9, 10],
+// 	days:     [1, 15],
+// 	months:   [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+// 	weekDays: [3],
+// }
+```
+
+#### parseCron.nextDate(exp: string | CronSchedule, from: Date = new Date.now()): Date
+Take a cron schedule or an expression and returns the next date that matches the
+schedule, or  `undefined` if the expression  is invalid. If given  a datetime as
+the  second argument,  it  will start  the computation  from  this date  forward
+(otherwise it will use the current datetime at the moment it's called).
+
+Examples:
+```javascript
+const { parseCron } = require('mi-cron');
+
+console.log(parseCron.nextDate('* * * * *', new Date('01 Jan 2020 00:00:00 GMT')).toUTCString());
+// Wed, 01 Jan 2020 00:01:00
+
+// Get the next five scheduled dates
+const schedule = parseCron('@weekly');
+const nextDate = new Date();
+for (let i=0; i<5; i++) {
+	console.log(nextDate = parseCron.nextDate(schedule, nextDate));
+}
+```
+
+## Related
+ * [crontab.guru](https://crontab.guru/): an interactive cron schedule editor
+ * [Description of the crontab format](https://crontab.guru/crontab.5.html)
+ * [Best practices for cron](https://www.endpoint.com/blog/2008/12/08/best-practices-for-cron)
 
 ## License
-```
+```text
 Copyright (c) 2020-present, cheap glitch
 
 Permission to use, copy, modify, and/or distribute this software for any purpose
