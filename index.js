@@ -19,10 +19,10 @@ const shorthands = {
 function parseCron(exp) {
     const fields = exp.trim().split(/\s+/);
     if (fields.length == 1) {
-        return (fields[0] in shorthands) ? parseCron(shorthands[fields[0]]) : null;
+        return (fields[0] in shorthands) ? parseCron(shorthands[fields[0]]) : undefined;
     }
     if (fields.length == 5) {
-        let schedule = null;
+        let schedule = undefined;
         try {
             schedule = {
                 minutes: parseField(fields[0], 0, 59),
@@ -33,11 +33,11 @@ function parseCron(exp) {
             };
         }
         catch (_a) {
-            return null;
+            return undefined;
         }
         return schedule;
     }
-    return null;
+    return undefined;
 }
 exports.parseCron = parseCron;
 function parseField(field, min, max, aliases = []) {
@@ -74,8 +74,8 @@ function parseRangeBoundary(bound, min, max, aliases = []) {
 }
 parseCron.nextDate = function (exp, from = new Date()) {
     const schedule = typeof exp == 'string' ? parseCron(exp) : exp;
-    if (schedule === null) {
-        return null;
+    if (schedule === undefined) {
+        return undefined;
     }
     const date = {
         years: from.getUTCFullYear(),

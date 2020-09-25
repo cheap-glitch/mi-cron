@@ -35,16 +35,16 @@ const shorthands: { [index: string]: string } = {
 	'@annually': '0 0 1 1 *',
 };
 
-// Return a schedule as a collection of numerical arrays, or `null` if the cron expression is deemed invalid
-export function parseCron(exp: string): CronSchedule | null {
+// Return a schedule as a collection of numerical arrays, or `undefined` if the cron expression is deemed invalid
+export function parseCron(exp: string): CronSchedule | undefined {
 	const fields = exp.trim().split(/\s+/);
 
 	if (fields.length == 1) {
-		return (fields[0] in shorthands) ? parseCron(shorthands[fields[0]]) : null;
+		return (fields[0] in shorthands) ? parseCron(shorthands[fields[0]]) : undefined;
 	}
 
 	if (fields.length == 5) {
-		let schedule = null;
+		let schedule = undefined;
 
 		try {
 			schedule = {
@@ -55,13 +55,13 @@ export function parseCron(exp: string): CronSchedule | null {
 				weekDays: parseField(fields[4], 0,  6, ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']),
 			};
 		} catch {
-			return null;
+			return undefined;
 		}
 
 		return schedule;
 	}
 
-	return null;
+	return undefined;
 }
 
 function parseField(field: string, min: number, max: number, aliases: string[] = []): number[] {
@@ -112,11 +112,11 @@ function parseRangeBoundary(bound: string, min: number, max: number, aliases: st
 	return (!Number.isNaN(value) && min <= value && value <= max) ? value : null;
 }
 
-// Return the closest date and time matched by the cron schedule (or `null` if the schedule is deemed invalid)
+// Return the closest date and time matched by the cron schedule (or `undefined` if the schedule is deemed invalid)
 parseCron.nextDate = function(exp: string | CronSchedule, from = new Date()): Date {
 	const schedule = typeof exp == 'string' ? parseCron(exp) : exp;
-	if (schedule === null) {
-		return null;
+	if (schedule === undefined) {
+		return undefined;
 	}
 
 	const date: CronDate = {
