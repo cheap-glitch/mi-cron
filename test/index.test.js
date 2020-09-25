@@ -136,6 +136,21 @@ describe("parseCron", () => {
 			months:   [1, 3, 5, 7, 9, 11],
 			weekDays: all.weekDays,
 		});
+		// Test implicit ranges
+		expect(parseCron('10/5 * * * *')).to.eql({
+			minutes:  [10, 15, 20, 25, 30, 35, 40, 45, 50, 55],
+			hours:    all.hours,
+			days:     all.days,
+			months:   all.months,
+			weekDays: all.weekDays,
+		});
+		expect(parseCron('0 0 * * mon/2')).to.eql({
+			minutes:  [0],
+			hours:    [0],
+			days:     all.days,
+			months:   all.months,
+			weekDays: [1, 3, 5],
+		});
 	}); // }}}
 
 	it("supports @-shorthands", () => { // {{{

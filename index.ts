@@ -82,7 +82,12 @@ function parseField(field: string, min: number, max: number, aliases: string[] =
 		if (!matches) {
 			throw Error();
 		}
-		const [start, stop = null] = matches.slice(1).map(match => parseRangeBoundary(match, min, max, aliases));
+		let [start, stop = null] = matches.slice(1).map(match => parseRangeBoundary(match, min, max, aliases));
+
+		// Implicit range (start only + step)
+		if (stop === null && item.includes('/')) {
+			stop = max;
+		}
 
 		// Invalid range
 		if (start === null || (stop !== null && stop < start)) {
@@ -112,7 +117,7 @@ function parseRangeBoundary(bound: string, min: number, max: number, aliases: st
 	return (!Number.isNaN(value) && min <= value && value <= max) ? value : null;
 }
 
-// Return the closest date and time matched by the cron schedule (or `undefined` if the schedule is deemed invalid)
+// Return the closest date and time matched by the cron schedule, or `undefined` if the schedule is deemed invalid
 parseCron.nextDate = function(exp: string | CronSchedule, from = new Date()): Date {
 	const schedule = typeof exp == 'string' ? parseCron(exp) : exp;
 	if (schedule === undefined) {

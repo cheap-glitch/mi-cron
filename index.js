@@ -54,7 +54,10 @@ function parseField(field, min, max, aliases = []) {
         if (!matches) {
             throw Error();
         }
-        const [start, stop = null] = matches.slice(1).map(match => parseRangeBoundary(match, min, max, aliases));
+        let [start, stop = null] = matches.slice(1).map(match => parseRangeBoundary(match, min, max, aliases));
+        if (stop === null && item.includes('/')) {
+            stop = max;
+        }
         if (start === null || (stop !== null && stop < start)) {
             throw Error();
         }

@@ -25,7 +25,7 @@ npm i mi-cron
 Parses a standard cron expression. Supports:
  * globs (`*`)
  * ranges (`0-30`, `mon-fri`)
- * steps (`*/3`, `20-31/2`)
+ * steps (`*/3`, `20-31/2`, `10/5`)
  * lists (`1,15`, `0-10,20-30/2`)
  * @-shorthands (`@weekly`)
 
