@@ -1,6 +1,12 @@
-# mi-cron
-![license badge](https://badgen.net/github/license/cheap-glitch/mi-cron?color=green)
-![latest release badge](https://badgen.net/github/release/cheap-glitch/mi-cron?color=green)
+<h1>
+	mi-cron
+	<img alt="license badge"        src="https://badgen.net/github/license/cheap-glitch/mi-cron?color=green">
+	<img alt="latest release badge" src="https://badgen.net/github/release/cheap-glitch/mi-cron?color=green">
+
+	<a href="https://codecov.io/gh/cheap-glitch/mi-cron">
+		<img src="https://codecov.io/gh/cheap-glitch/mi-cron/graph/badge.svg" />
+	</a>
+</h1>
 
 ```javascript
 const { parseCron } = require('mi-cron');
