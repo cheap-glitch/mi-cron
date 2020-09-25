@@ -65,7 +65,7 @@ function parseField(field, min, max, aliases = []) {
     values.sort((a, b) => a - b);
     return values;
 }
-function parseRangeBoundary(bound, min, max, aliases = []) {
+function parseRangeBoundary(bound, min, max, aliases) {
     if (aliases.includes(bound)) {
         return aliases.indexOf(bound);
     }
@@ -108,6 +108,6 @@ parseCron.nextDate = function (exp, from = new Date()) {
 function cronDateToUTC(date) {
     return new Date(Date.UTC(date.years, date.months - 1, date.days, date.hours, date.minutes));
 }
-function range(start, stop, step = 1) {
+function range(start, stop, step) {
     return Array.from({ length: Math.floor((stop - start) / step) + 1 }).map((_, i) => start + i * step);
 }

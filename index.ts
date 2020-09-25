@@ -103,7 +103,7 @@ function parseField(field: string, min: number, max: number, aliases: string[] =
 	return values;
 }
 
-function parseRangeBoundary(bound: string, min: number, max: number, aliases: string[] = []): number | null {
+function parseRangeBoundary(bound: string, min: number, max: number, aliases: string[]): number | null {
 	if (aliases.includes(bound)) {
 		return aliases.indexOf(bound);
 	}
@@ -172,6 +172,6 @@ function cronDateToUTC(date: CronDate): Date {
 	return new Date(Date.UTC(date.years, date.months - 1, date.days, date.hours, date.minutes));
 }
 
-function range(start: number, stop: number, step = 1): number[] | null {
+function range(start: number, stop: number, step: number): number[] | null {
 	return Array.from({ length: Math.floor((stop - start) / step) + 1 }).map((_, i) => start + i * step);
 }
