@@ -29,7 +29,7 @@ interface CronDate {
 const shorthands: { [index: string]: string } = {
 	'@hourly':   '0 * * * *',
 	'@daily':    '0 0 * * *',
-	'@weekly':   '0 0 * * 6',
+	'@weekly':   '0 0 * * 0',
 	'@monthly':  '0 0 1 * *',
 	'@yearly':   '0 0 1 1 *',
 	'@annually': '0 0 1 1 *',
