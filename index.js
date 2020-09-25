@@ -40,6 +40,8 @@ function parseCron(exp) {
     return undefined;
 }
 exports.parseCron = parseCron;
+const bound = '(\\d{1,2}|[a-z]{3})';
+const rangePattern = new RegExp(`^${bound}(?:-${bound})?$`, 'i');
 function parseField(field, min, max, aliases = []) {
     const values = Array.from(new Set(field.split(',').flatMap(item => {
         const [exp, stepStr = '1'] = item.split('/');
@@ -54,26 +56,21 @@ function parseField(field, min, max, aliases = []) {
         if (!matches) {
             throw Error();
         }
-        let [start, stop = null] = matches.slice(1).map(match => parseRangeBoundary(match, min, max, aliases));
-        if (stop === null && item.includes('/')) {
-            stop = max;
-        }
-        if (start === null || (stop !== null && stop < start)) {
+        const [start, stop = item.includes('/') ? max : undefined] = matches.slice(1).map(match => parseRangeBoundary(match, min, max, aliases));
+        if (start === undefined || (stop !== undefined && stop < start)) {
             throw Error();
         }
-        return stop == null ? [start] : range(start, stop, step);
+        return stop == undefined ? [start] : range(start, stop, step);
     })));
     values.sort((a, b) => a - b);
     return values;
 }
-const bound = '(\\d{1,2}|[a-z]{3})';
-const rangePattern = new RegExp(`^${bound}(?:-${bound})?$`, 'i');
 function parseRangeBoundary(bound, min, max, aliases = []) {
     if (aliases.includes(bound)) {
         return aliases.indexOf(bound);
     }
     const value = parseInt(bound, 10);
-    return (!Number.isNaN(value) && min <= value && value <= max) ? value : null;
+    return (!Number.isNaN(value) && min <= value && value <= max) ? value : undefined;
 }
 parseCron.nextDate = function (exp, from = new Date()) {
     const schedule = typeof exp == 'string' ? parseCron(exp) : exp;

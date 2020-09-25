@@ -64,6 +64,9 @@ export function parseCron(exp: string): CronSchedule | undefined {
 	return undefined;
 }
 
+const bound = '(\\d{1,2}|[a-z]{3})'
+const rangePattern = new RegExp(`^${bound}(?:-${bound})?$`, 'i');
+
 function parseField(field: string, min: number, max: number, aliases: string[] = []): number[] {
 	// Parse every item of the comma-separated list, merge the values and remove duplicates
 	const values = Array.from(new Set(field.split(',').flatMap(item => {
@@ -82,19 +85,15 @@ function parseField(field: string, min: number, max: number, aliases: string[] =
 		if (!matches) {
 			throw Error();
 		}
-		let [start, stop = null] = matches.slice(1).map(match => parseRangeBoundary(match, min, max, aliases));
 
-		// Implicit range (start only + step)
-		if (stop === null && item.includes('/')) {
-			stop = max;
-		}
+		const [start, stop = item.includes('/') ? max : undefined] = matches.slice(1).map(match => parseRangeBoundary(match, min, max, aliases));
 
 		// Invalid range
-		if (start === null || (stop !== null && stop < start)) {
+		if (start === undefined || (stop !== undefined && stop < start)) {
 			throw Error();
 		}
 
-		return stop == null ? [start] : range(start, stop, step);
+		return stop == undefined ? [start] : range(start, stop, step);
 	})));
 
 	// Sort the array numerically
@@ -104,9 +103,6 @@ function parseField(field: string, min: number, max: number, aliases: string[] =
 	return values;
 }
 
-const bound = '(\\d{1,2}|[a-z]{3})'
-const rangePattern = new RegExp(`^${bound}(?:-${bound})?$`, 'i');
-
 function parseRangeBoundary(bound: string, min: number, max: number, aliases: string[] = []): number | null {
 	if (aliases.includes(bound)) {
 		return aliases.indexOf(bound);
@@ -114,7 +110,7 @@ function parseRangeBoundary(bound: string, min: number, max: number, aliases: st
 
 	const value = parseInt(bound, 10);
 
-	return (!Number.isNaN(value) && min <= value && value <= max) ? value : null;
+	return (!Number.isNaN(value) && min <= value && value <= max) ? value : undefined;
 }
 
 // Return the closest date and time matched by the cron schedule, or `undefined` if the schedule is deemed invalid
