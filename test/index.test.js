@@ -11,46 +11,46 @@ const all = {
 const testDate = new Date(Date.UTC(2020, 0, 1, 0, 0));
 
 describe("parseCron", () => {
-	it("returns `null` when given an invalid cron expression", () => { // {{{
+	it("returns `undefined` when given an invalid cron expression", () => { // {{{
 		// Not enough fields
-		expect(parseCron('')).to.be.null;
-		expect(parseCron('* * *')).to.be.null;
-		expect(parseCron('30 * 10-22')).to.be.null;
+		expect(parseCron('')).to.be.undefined;
+		expect(parseCron('* * *')).to.be.undefined;
+		expect(parseCron('30 * 10-22')).to.be.undefined;
 
 		// Too much fields
-		expect(parseCron('* * * * * *')).to.be.null;
-		expect(parseCron('0 0 1 1 * 3000')).to.be.null;
+		expect(parseCron('* * * * * *')).to.be.undefined;
+		expect(parseCron('0 0 1 1 * 3000')).to.be.undefined;
 
 		// Unsupported syntax
-		expect(parseCron('* * * * 5L')).to.be.null;
-		expect(parseCron('* * * * 15W')).to.be.null;
-		expect(parseCron('* * * * 5#3')).to.be.null;
-		expect(parseCron('? ? * * *')).to.be.null;
+		expect(parseCron('* * * * 5L')).to.be.undefined;
+		expect(parseCron('* * * * 15W')).to.be.undefined;
+		expect(parseCron('* * * * 5#3')).to.be.undefined;
+		expect(parseCron('? ? * * *')).to.be.undefined;
 
 		// Unsupported shorthand
-		expect(parseCron('@reboot')).to.be.null;
+		expect(parseCron('@reboot')).to.be.undefined;
 
 		// Invalid syntax
-		expect(parseCron('30- * * * *')).to.be.null;
-		expect(parseCron('-30 * * * *')).to.be.null;
+		expect(parseCron('30- * * * *')).to.be.undefined;
+		expect(parseCron('-30 * * * *')).to.be.undefined;
 
 		// Invalid values
-		expect(parseCron('60 * * * *')).to.be.null;
-		expect(parseCron('0,60 * * * *')).to.be.null;
-		expect(parseCron('* 24 * * *')).to.be.null;
-		expect(parseCron('* * 0 * *')).to.be.null;
-		expect(parseCron('* * 32 * *')).to.be.null;
-		expect(parseCron('* * * 0 *')).to.be.null;
-		expect(parseCron('* * * 13 *')).to.be.null;
-		expect(parseCron('* * * jan,febr *')).to.be.null;
-		expect(parseCron('* * * * monday')).to.be.null;
+		expect(parseCron('60 * * * *')).to.be.undefined;
+		expect(parseCron('0,60 * * * *')).to.be.undefined;
+		expect(parseCron('* 24 * * *')).to.be.undefined;
+		expect(parseCron('* * 0 * *')).to.be.undefined;
+		expect(parseCron('* * 32 * *')).to.be.undefined;
+		expect(parseCron('* * * 0 *')).to.be.undefined;
+		expect(parseCron('* * * 13 *')).to.be.undefined;
+		expect(parseCron('* * * jan,febr *')).to.be.undefined;
+		expect(parseCron('* * * * monday')).to.be.undefined;
 
 		// Invalid ranges
-		expect(parseCron('30-0 * * * *')).to.be.null;
-		expect(parseCron('* 0-100 * * *')).to.be.null;
-		expect(parseCron('* 23-0 * * *')).to.be.null;
-		expect(parseCron('* * * 12-4 *')).to.be.null;
-		expect(parseCron('* * * dec-apr *')).to.be.null;
+		expect(parseCron('30-0 * * * *')).to.be.undefined;
+		expect(parseCron('* 0-100 * * *')).to.be.undefined;
+		expect(parseCron('* 23-0 * * *')).to.be.undefined;
+		expect(parseCron('* * * 12-4 *')).to.be.undefined;
+		expect(parseCron('* * * dec-apr *')).to.be.undefined;
 	}); // }}}
 
 	it("parses standard cron expressions", () => { // {{{
