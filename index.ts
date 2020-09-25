@@ -36,8 +36,8 @@ const shorthands: { [index: string]: string } = {
 };
 
 // Return a schedule as a collection of numerical arrays, or `null` if the cron expression is deemed invalid
-export function parseCron(line: string): CronSchedule | null {
-	const fields = line.trim().split(/\s+/);
+export function parseCron(exp: string): CronSchedule | null {
+	const fields = exp.trim().split(/\s+/);
 
 	if (fields.length == 1) {
 		return (fields[0] in shorthands) ? parseCron(shorthands[fields[0]]) : null;
@@ -64,7 +64,7 @@ export function parseCron(line: string): CronSchedule | null {
 	return null;
 }
 
-function parseField(field: string, min: number, max: number, aliases: string[] = []): number[] | null {
+function parseField(field: string, min: number, max: number, aliases: string[] = []): number[] {
 	// Parse every item of the comma-separated list, merge the values and remove duplicates
 	const values = Array.from(new Set(field.split(',').flatMap(item => {
 		const [exp, stepStr = '1'] = item.split('/');
@@ -82,8 +82,7 @@ function parseField(field: string, min: number, max: number, aliases: string[] =
 		if (!matches) {
 			throw Error();
 		}
-		const start = parseRangeBoundary(matches[1], min, max, aliases);
-		const stop  = parseRangeBoundary(matches[2], min, max, aliases);
+		const [start, stop = null] = matches.slice(1).map(match => parseRangeBoundary(match, min, max, aliases));
 
 		// Invalid range
 		if (start === null || (stop !== null && stop < start)) {
@@ -104,10 +103,6 @@ const bound = '(\\d{1,2}|[a-z]{3})'
 const rangePattern = new RegExp(`^${bound}(?:-${bound})?$`, 'i');
 
 function parseRangeBoundary(bound: string, min: number, max: number, aliases: string[] = []): number | null {
-	if (!bound) {
-		return null;
-	}
-
 	if (aliases.includes(bound)) {
 		return aliases.indexOf(bound);
 	}
@@ -118,49 +113,58 @@ function parseRangeBoundary(bound: string, min: number, max: number, aliases: st
 }
 
 // Return the closest date and time matched by the cron schedule (or `null` if the schedule is deemed invalid)
-parseCron.nextDate = function(schedule: string | CronSchedule, from = new Date()): Date {
-	schedule = typeof schedule == 'string' ? parseCron(schedule) : schedule;
+parseCron.nextDate = function(exp: string | CronSchedule, from = new Date()): Date {
+	const schedule = typeof exp == 'string' ? parseCron(exp) : exp;
 	if (schedule === null) {
 		return null;
 	}
 
 	const date: CronDate = {
-		minutes: from.getUTCMinutes(),
-		hours:   from.getUTCHours(),
-		// Days are numbered from 1 to 31...
-		days:    from.getUTCDate(),
-		// ...but for whatever reason months are numbered from 0 to 11
-		months:  from.getUTCMonth() + 1,
 		years:   from.getUTCFullYear(),
+		// For whatever reason, months are numbered from 0 to 11...
+		months:  from.getUTCMonth() + 1,
+		days:    from.getUTCDate(),
+		hours:   from.getUTCHours(),
+		// Always consider the current minute to be already passed
+		minutes: from.getUTCMinutes() + 1,
 	};
+	const dials = Object.keys(date);
 
-	// Find the next suitable minute and hour
-	findNextTime(schedule, date, 'minutes', 'hours');
-	findNextTime(schedule, date, 'hours',   'days');
+	for (let i=1; i<dials.length; i++) {
+		const dial = dials[i];
 
-	// Find the next suitable day and month
-	do {
-		findNextTime(schedule, date, 'days',   'months');
-		findNextTime(schedule, date, 'months', 'years');
-	// Ensure the selected day is one of the possible weekdays
-	} while (!schedule.weekDays.includes(cronDateToUTC(date).getUTCDay()) && ++date.days);
+		if (!schedule[dial].includes(date[dial])) {
+			// Reset all the next dials
+			dials.filter((_, j) => j > i).forEach(d => date[d] = schedule[d][0]);
+
+			// Try to find the next incoming time
+			date[dial] = schedule[dial].find(t => t >= date[dial]);
+
+			// If no fitting time is found...
+			if (date[dial] === undefined) {
+				// ...restart from the beginning of the list...
+				date[dial] = schedule[dial][0];
+
+				// ...and increment the previous dial
+				// NB: We can just increment without worrying about boundaries
+				//     JavaScript will just fix incorrect dates magically \o/
+				date[dials[i-1]]++;
+
+				// Go back to the previous dial (unless we're at the months)
+				i = (dial != 'months') ? (i - 2) : i;
+			}
+		}
+
+		// Make sure the selected day is one of the possible weekdays
+		if (dial == 'days' && !schedule.weekDays.includes(cronDateToUTC(date).getUTCDay())) {
+			date.days++;
+			date.hours   = schedule.hours[0];
+			date.minutes = schedule.minutes[0];
+			i = 1;
+		}
+	}
 
 	return cronDateToUTC(date);
-}
-
-// Try to find the next incoming time
-function findNextTime(schedule: CronSchedule, date: CronDate, elem: string, nextElem: string): void {
-	// Perform a strict greater-than check for the minutes only
-	// as we always consider the current minute to be passed already
-	date[elem] = schedule[elem].find(elem == 'minutes' ? (time => time > date[elem]) : (time => time >= date[elem]));
-
-	if (date[elem] === undefined) {
-		// If no fitting time is found, restart from the beginning of the list and increment the next date element
-		date[elem] = schedule[elem][0],
-		// We can just increment without worrying about boundaries
-		// JavaScript will just fix incorrect dates magically \o/
-		date[nextElem]++;
-	}
 }
 
 function cronDateToUTC(date: CronDate): Date {

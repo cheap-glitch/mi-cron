@@ -11,13 +11,13 @@ exports.parseCron = void 0;
 const shorthands = {
     '@hourly': '0 * * * *',
     '@daily': '0 0 * * *',
-    '@weekly': '0 0 * * 6',
+    '@weekly': '0 0 * * 0',
     '@monthly': '0 0 1 * *',
     '@yearly': '0 0 1 1 *',
     '@annually': '0 0 1 1 *',
 };
-function parseCron(line) {
-    const fields = line.trim().split(/\s+/);
+function parseCron(exp) {
+    const fields = exp.trim().split(/\s+/);
     if (fields.length == 1) {
         return (fields[0] in shorthands) ? parseCron(shorthands[fields[0]]) : null;
     }
@@ -54,8 +54,7 @@ function parseField(field, min, max, aliases = []) {
         if (!matches) {
             throw Error();
         }
-        const start = parseRangeBoundary(matches[1], min, max, aliases);
-        const stop = parseRangeBoundary(matches[2], min, max, aliases);
+        const [start, stop = null] = matches.slice(1).map(match => parseRangeBoundary(match, min, max, aliases));
         if (start === null || (stop !== null && stop < start)) {
             throw Error();
         }
@@ -67,42 +66,45 @@ function parseField(field, min, max, aliases = []) {
 const bound = '(\\d{1,2}|[a-z]{3})';
 const rangePattern = new RegExp(`^${bound}(?:-${bound})?$`, 'i');
 function parseRangeBoundary(bound, min, max, aliases = []) {
-    if (!bound) {
-        return null;
-    }
     if (aliases.includes(bound)) {
         return aliases.indexOf(bound);
     }
     const value = parseInt(bound, 10);
     return (!Number.isNaN(value) && min <= value && value <= max) ? value : null;
 }
-parseCron.nextDate = function (schedule, from = new Date()) {
-    schedule = typeof schedule == 'string' ? parseCron(schedule) : schedule;
+parseCron.nextDate = function (exp, from = new Date()) {
+    const schedule = typeof exp == 'string' ? parseCron(exp) : exp;
     if (schedule === null) {
         return null;
     }
     const date = {
-        minutes: from.getUTCMinutes(),
-        hours: from.getUTCHours(),
-        days: from.getUTCDate(),
-        months: from.getUTCMonth() + 1,
         years: from.getUTCFullYear(),
+        months: from.getUTCMonth() + 1,
+        days: from.getUTCDate(),
+        hours: from.getUTCHours(),
+        minutes: from.getUTCMinutes() + 1,
     };
-    findNextTime(schedule, date, 'minutes', 'hours');
-    findNextTime(schedule, date, 'hours', 'days');
-    do {
-        findNextTime(schedule, date, 'days', 'months');
-        findNextTime(schedule, date, 'months', 'years');
-    } while (!schedule.weekDays.includes(cronDateToUTC(date).getUTCDay()) && ++date.days);
+    const dials = Object.keys(date);
+    for (let i = 1; i < dials.length; i++) {
+        const dial = dials[i];
+        if (!schedule[dial].includes(date[dial])) {
+            dials.filter((_, j) => j > i).forEach(d => date[d] = schedule[d][0]);
+            date[dial] = schedule[dial].find(t => t >= date[dial]);
+            if (date[dial] === undefined) {
+                date[dial] = schedule[dial][0];
+                date[dials[i - 1]]++;
+                i = (dial != 'months') ? (i - 2) : i;
+            }
+        }
+        if (dial == 'days' && !schedule.weekDays.includes(cronDateToUTC(date).getUTCDay())) {
+            date.days++;
+            date.hours = schedule.hours[0];
+            date.minutes = schedule.minutes[0];
+            i = 1;
+        }
+    }
     return cronDateToUTC(date);
 };
-function findNextTime(schedule, date, elem, nextElem) {
-    date[elem] = schedule[elem].find(elem == 'minutes' ? (time => time > date[elem]) : (time => time >= date[elem]));
-    if (date[elem] === undefined) {
-        date[elem] = schedule[elem][0],
-            date[nextElem]++;
-    }
-}
 function cronDateToUTC(date) {
     return new Date(Date.UTC(date.years, date.months - 1, date.days, date.hours, date.minutes));
 }
