@@ -2,7 +2,7 @@
   "scripts": {
     "build": "npm run build:ts && npm run build:minify",
     "build:ts": "tsc",
-    "build:minify": "terser --compress --mangle --comments '/^!/' --output index.min.js -- index.js",
+    "build:minify": "terser --compress --mangle toplevel --comments '/^!/' --output index.min.js -- index.js",
     "coverage": "nyc npm test",
     "coverage:report": "npm run coverage && nyc report --reporter=text-lcov | codecov --pipe --disable=gcov",
     "lint": "eslint . --ext .ts",

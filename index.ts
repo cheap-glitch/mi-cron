@@ -64,13 +64,13 @@ export function parseCron(exp: string): CronSchedule | undefined {
 	return undefined;
 }
 
-const bound = '(\\d{1,2}|[a-z]{3})'
-const rangePattern = new RegExp(`^${bound}(?:-${bound})?$`, 'i');
+const boundary     = '(\\d{1,2}|[a-z]{3})'
+const rangePattern = new RegExp(`^${boundary}(?:-${boundary})?$`, 'i');
 
 function parseField(field: string, min: number, max: number, aliases: string[] = []): number[] {
 	// Parse every item of the comma-separated list, merge the values and remove duplicates
 	const values = Array.from(new Set(field.split(',').flatMap(item => {
-		const [exp, stepStr = '1'] = item.split('/');
+		const [exp, stepStr = '1'] = item.split('/', 2);
 
 		const step = parseInt(stepStr, 10);
 		if (Number.isNaN(step)) {
@@ -86,7 +86,15 @@ function parseField(field: string, min: number, max: number, aliases: string[] =
 			throw Error();
 		}
 
-		const [start, stop = item.includes('/') ? max : undefined] = matches.slice(1).map(match => parseRangeBoundary(match, min, max, aliases));
+		const [start, stop = item.includes('/') ? max : undefined] = matches.slice(1).map(match => {
+			if (aliases.includes(match)) {
+				return aliases.indexOf(match);
+			}
+
+			const value = parseInt(match, 10);
+
+			return (!Number.isNaN(value) && min <= value && value <= max) ? value : undefined;
+		});
 
 		// Invalid range
 		if (start === undefined || (stop !== undefined && stop < start)) {
@@ -101,16 +109,6 @@ function parseField(field: string, min: number, max: number, aliases: string[] =
 	values.sort((a, b) => a - b);
 
 	return values;
-}
-
-function parseRangeBoundary(bound: string, min: number, max: number, aliases: string[]): number | null {
-	if (aliases.includes(bound)) {
-		return aliases.indexOf(bound);
-	}
-
-	const value = parseInt(bound, 10);
-
-	return (!Number.isNaN(value) && min <= value && value <= max) ? value : undefined;
 }
 
 // Return the closest date and time matched by the cron schedule, or `undefined` if the schedule is deemed invalid

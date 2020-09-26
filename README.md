@@ -13,7 +13,8 @@ console.log(parseCron.nextDate('*/5 6-12 3 3 *').toUTCString());
 // Wed, 03 Mar 2021 06:00:00
 ```
 
-This is a microscopic (~1KB minified & gzipped) parser for [standard cron expressions](https://en.wikipedia.org/wiki/Cron#CRON_expression).
+This is  a microscopic  (~1KB minified &  gzipped) zero-dependencies  parser for
+[standard cron expressions](https://en.wikipedia.org/wiki/Cron#CRON_expression).
 It  also  supports   a  few  non-standard  but  convenient   features,  such  as
 @-shorthands (e.g. `@daily`)  and steps (e.g. `*/10`), and can  compute the next
 scheduled date for a given expression.
