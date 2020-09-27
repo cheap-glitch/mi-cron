@@ -1,8 +1,31 @@
 {
+  "name": "mi-cron",
+  "description": "A microscopic parser for standard cron expressions.",
+  "version": "1.0.0",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheap-glitch/mi-cron.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cheap-glitch/mi-cron/issues"
+  },
+  "author": "cheap glitch <cheap.glitch@gmail.com> (https://github.com/cheap-glitch)",
+  "homepage": "https://github.com/cheap-glitch/mi-cron#readme",
+  "keywords": [
+    "cron",
+    "cron-expression",
+    "crontable",
+    "parser"
+  ],
+  "main": "index.min.js",
+  "directories": {
+    "test": "test"
+  },
   "scripts": {
     "build": "npm run build:ts && npm run build:minify",
-    "build:ts": "tsc",
     "build:minify": "terser --compress --mangle toplevel --comments '/^!/' --output index.min.js -- index.js",
+    "build:ts": "tsc",
     "coverage": "nyc npm test",
     "coverage:report": "npm run coverage && nyc report --reporter=text-lcov | codecov --pipe --disable=gcov",
     "lint": "eslint . --ext .ts",
@@ -13,7 +36,7 @@
     "@typescript-eslint/eslint-plugin": "^4.2.0",
     "@typescript-eslint/parser": "^4.2.0",
     "chai": "^4.2.0",
-    "eslint": "^7.9.0",
+    "eslint": "^7.10.0",
     "mocha": "^8.1.3",
     "nodemon": "^2.0.4",
     "nyc": "^15.1.0",

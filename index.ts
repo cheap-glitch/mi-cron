@@ -120,7 +120,7 @@ parseCron.nextDate = function(exp: string | CronSchedule, from = new Date()): Da
 
 	const date: CronDate = {
 		years:   from.getUTCFullYear(),
-		// For whatever reason, months are numbered from 0 to 11...
+		// For whatever reason, UTC months are numbered from 0 to 11...
 		months:  from.getUTCMonth() + 1,
 		days:    from.getUTCDate(),
 		hours:   from.getUTCHours(),
