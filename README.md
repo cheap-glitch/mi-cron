@@ -21,7 +21,7 @@ scheduled date for a given expression.
 
 ## Installation
 ```shell
-npm i mi-cron
+npm i @cheap-glitch/mi-cron
 ```
 
 ## API
