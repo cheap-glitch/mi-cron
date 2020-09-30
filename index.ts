@@ -112,7 +112,7 @@ function parseField(field: string, min: number, max: number, aliases: string[] =
 }
 
 // Return the closest date and time matched by the cron schedule, or `undefined` if the schedule is deemed invalid
-parseCron.nextDate = function(exp: string | CronSchedule, from = new Date()): Date {
+parseCron.nextDate = function(exp: string | CronSchedule, from = new Date()): Date | undefined {
 	const schedule = typeof exp == 'string' ? parseCron(exp) : exp;
 	if (schedule === undefined) {
 		return undefined;
@@ -137,10 +137,12 @@ parseCron.nextDate = function(exp: string | CronSchedule, from = new Date()): Da
 			dials.filter((_, j) => j > i).forEach(d => date[d] = schedule[d][0]);
 
 			// Try to find the next incoming time
-			date[dial] = schedule[dial].find(t => t >= date[dial]);
+			const nextTime = schedule[dial].find(t => t >= date[dial]);
 
+			if (nextTime !== undefined) {
+				date[dial] = nextTime;
 			// If no fitting time is found...
-			if (date[dial] === undefined) {
+			} else {
 				// ...restart from the beginning of the list...
 				date[dial] = schedule[dial][0];
 
@@ -170,6 +172,6 @@ function cronDateToUTC(date: CronDate): Date {
 	return new Date(Date.UTC(date.years, date.months - 1, date.days, date.hours, date.minutes));
 }
 
-function range(start: number, stop: number, step: number): number[] | null {
+function range(start: number, stop: number, step: number): number[] {
 	return Array.from({ length: Math.floor((stop - start) / step) + 1 }).map((_, i) => start + i * step);
 }

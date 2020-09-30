@@ -1,3 +1,4 @@
+"use strict";
 /*!
  * mi-cron
  *
@@ -88,8 +89,11 @@ parseCron.nextDate = function (exp, from = new Date()) {
         const dial = dials[i];
         if (!schedule[dial].includes(date[dial])) {
             dials.filter((_, j) => j > i).forEach(d => date[d] = schedule[d][0]);
-            date[dial] = schedule[dial].find(t => t >= date[dial]);
-            if (date[dial] === undefined) {
+            const nextTime = schedule[dial].find(t => t >= date[dial]);
+            if (nextTime !== undefined) {
+                date[dial] = nextTime;
+            }
+            else {
                 date[dial] = schedule[dial][0];
                 date[dials[i - 1]]++;
                 i = (dial != 'months') ? (i - 2) : i;
