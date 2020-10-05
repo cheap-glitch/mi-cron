@@ -1,10 +1,4 @@
-<h1>
-mi-cron
-&nbsp;
-<img alt="license badge"        src="https://badgen.net/github/license/cheap-glitch/mi-cron?color=green">
-<img alt="latest release badge" src="https://badgen.net/github/release/cheap-glitch/mi-cron?color=green">
-<a href="https://codecov.io/gh/cheap-glitch/mi-cron"><img alt="codecov badge" src="https://codecov.io/gh/cheap-glitch/mi-cron/graph/badge.svg"></a>
-</h1>
+# 📆 mi-cron&ensp;![license badge](https://badgen.net/github/license/cheap-glitch/mi-cron?color=green) ![latest release badge](https://badgen.net/github/release/cheap-glitch/mi-cron?color=green) [![codecov badge](https://codecov.io/gh/cheap-glitch/mi-cron/graph/badge.svg)](https://codecov.io/gh/cheap-glitch/mi-cron)
 
 ```javascript
 const { parseCron } = require('@cheap-glitch/mi-cron');
@@ -56,7 +50,7 @@ console.log(parseCron('*/5 6-10 1,15 * wed'));
 // }
 ```
 
-### parseCron.nextDate(exp: string | CronSchedule, from: Date = new Date.now()): Date
+### parseCron.nextDate(exp: string | CronSchedule[, from: Date = new Date.now()]): Date
 Takes a cron schedule  or expression and returns the next  date that matches the
 schedule, or  `undefined` if the expression  is invalid. If given  a datetime as
 the second argument, it will start  the computation from this time (otherwise it
