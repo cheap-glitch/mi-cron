@@ -173,5 +173,5 @@ function cronDateToUTC(date: CronDate): Date {
 }
 
 function range(start: number, stop: number, step: number): number[] {
-	return Array.from({ length: Math.floor((stop - start) / step) + 1 }).map((_, i) => start + i * step);
+	return Array.from({ length: Math.floor((stop - start) / step) + 1 }, (_, i) => start + i * step);
 }
