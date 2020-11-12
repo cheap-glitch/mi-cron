@@ -29,18 +29,22 @@
     "coverage": "nyc npm test",
     "coverage:report": "npm run coverage && nyc report --reporter=text-lcov | codecov --pipe --disable=gcov",
     "lint": "eslint . --ext .ts",
-    "test": "npm run build:ts && mocha",
+    "test": "mocha --extension ts --require 'ts-node/register'",
     "test:watch": "nodemon -e js,ts --watch . --watch test --ignore index.js --exec 'npm run test || exit 1'"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.14",
+    "@types/mocha": "^8.0.4",
     "@typescript-eslint/eslint-plugin": "^4.7.0",
     "@typescript-eslint/parser": "^4.7.0",
     "chai": "^4.2.0",
     "eslint": "^7.13.0",
+    "eslint-plugin-smarter-tabs": "^1.1.2",
     "mocha": "^8.2.1",
     "nodemon": "^2.0.6",
     "nyc": "^15.1.0",
     "terser": "^5.3.8",
+    "ts-node": "^9.0.0",
     "typescript": "^4.0.5"
   }
 }

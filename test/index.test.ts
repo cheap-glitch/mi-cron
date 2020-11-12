@@ -1,5 +1,5 @@
-const expect        = require('chai').expect;
-const { parseCron } = require('../index.js');
+import { expect }    from 'chai';
+import { parseCron } from '..';
 
 const all = {
 	minutes:  Array.from({ length: 60 }).map((_, i) => i),
@@ -8,7 +8,6 @@ const all = {
 	months:   Array.from({ length: 12 }).map((_, i) => i + 1),
 	weekDays: Array.from({ length:  7 }).map((_, i) => i),
 };
-const testDate = new Date(Date.UTC(2020, 0, 1, 0, 0));
 
 describe("parseCron", () => {
 
@@ -217,26 +216,26 @@ describe("parseCron.nextDate", () => {
 	}); // }}}
 
 	it("gives the correct date", () => { // {{{
-		expect(parseCron.nextDate('* * * * *',       new Date('01 Jan 2020 00:00:00 GMT')).toUTCString()).to.equal(new Date('01 Jan 2020 00:01:00 GMT').toUTCString());
-		expect(parseCron.nextDate('0 * * * *',       new Date('01 Jan 2020 00:00:00 GMT')).toUTCString()).to.equal(new Date('01 Jan 2020 01:00:00 GMT').toUTCString());
-		expect(parseCron.nextDate('*/5 * * * *',     new Date('01 Jan 2020 00:01:00 GMT')).toUTCString()).to.equal(new Date('01 Jan 2020 00:05:00 GMT').toUTCString());
-		expect(parseCron.nextDate('* * 5-24 * *',    new Date('12 Jan 2020 00:00:00 GMT')).toUTCString()).to.equal(new Date('12 Jan 2020 00:01:00 GMT').toUTCString());
+		expect(parseCron.nextDate('* * * * *',       new Date('01 Jan 2020 00:00:00 GMT'))!.toUTCString()).to.equal(new Date('01 Jan 2020 00:01:00 GMT').toUTCString());
+		expect(parseCron.nextDate('0 * * * *',       new Date('01 Jan 2020 00:00:00 GMT'))!.toUTCString()).to.equal(new Date('01 Jan 2020 01:00:00 GMT').toUTCString());
+		expect(parseCron.nextDate('*/5 * * * *',     new Date('01 Jan 2020 00:01:00 GMT'))!.toUTCString()).to.equal(new Date('01 Jan 2020 00:05:00 GMT').toUTCString());
+		expect(parseCron.nextDate('* * 5-24 * *',    new Date('12 Jan 2020 00:00:00 GMT'))!.toUTCString()).to.equal(new Date('12 Jan 2020 00:01:00 GMT').toUTCString());
 
 		// Examples from <https://crontab.guru>
-		expect(parseCron.nextDate('5 0 * 8 *',       new Date('25 Sep 2020 12:00:00 GMT')).toUTCString()).to.equal(new Date('01 Aug 2021 00:05:00 GMT').toUTCString());
-		expect(parseCron.nextDate('15 14 1 * *',     new Date('25 Sep 2020 12:00:00 GMT')).toUTCString()).to.equal(new Date('01 Oct 2020 14:15:00 GMT').toUTCString());
-		expect(parseCron.nextDate('23 0-20/2 * * *', new Date('25 Sep 2020 12:00:00 GMT')).toUTCString()).to.equal(new Date('25 Sep 2020 12:23:00 GMT').toUTCString());
-		expect(parseCron.nextDate('0 0,12 1 */2 *',  new Date('25 Sep 2020 12:00:00 GMT')).toUTCString()).to.equal(new Date('01 Nov 2020 00:00:00 GMT').toUTCString());
-		expect(parseCron.nextDate('0 4 8-14 * *',    new Date('25 Sep 2020 12:00:00 GMT')).toUTCString()).to.equal(new Date('08 Oct 2020 04:00:00 GMT').toUTCString());
-		expect(parseCron.nextDate('@weekly',         new Date('25 Sep 2020 12:00:00 GMT')).toUTCString()).to.equal(new Date('27 Sep 2020 00:00:00 GMT').toUTCString());
+		expect(parseCron.nextDate('5 0 * 8 *',       new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).to.equal(new Date('01 Aug 2021 00:05:00 GMT').toUTCString());
+		expect(parseCron.nextDate('15 14 1 * *',     new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).to.equal(new Date('01 Oct 2020 14:15:00 GMT').toUTCString());
+		expect(parseCron.nextDate('23 0-20/2 * * *', new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).to.equal(new Date('25 Sep 2020 12:23:00 GMT').toUTCString());
+		expect(parseCron.nextDate('0 0,12 1 */2 *',  new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).to.equal(new Date('01 Nov 2020 00:00:00 GMT').toUTCString());
+		expect(parseCron.nextDate('0 4 8-14 * *',    new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).to.equal(new Date('08 Oct 2020 04:00:00 GMT').toUTCString());
+		expect(parseCron.nextDate('@weekly',         new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).to.equal(new Date('27 Sep 2020 00:00:00 GMT').toUTCString());
 	}); // }}}
 
 	it("supports week days", () => { // {{{
-		expect(parseCron.nextDate('* * * * mon',     new Date('01 Jan 2020 00:00:00 GMT')).toUTCString()).to.equal(new Date('06 Jan 2020 00:00:00 GMT').toUTCString());
-		expect(parseCron.nextDate('* * 1 1 sun',     new Date('01 Jan 2020 00:00:00 GMT')).toUTCString()).to.equal(new Date('01 Jan 2023 00:00:00 GMT').toUTCString());
-		expect(parseCron.nextDate('5 4 * * sun',     new Date('25 Sep 2020 12:00:00 GMT')).toUTCString()).to.equal(new Date('27 Sep 2020 04:05:00 GMT').toUTCString());
-		expect(parseCron.nextDate('0 22 * * 1-5',    new Date('25 Sep 2020 12:00:00 GMT')).toUTCString()).to.equal(new Date('25 Sep 2020 22:00:00 GMT').toUTCString());
-		expect(parseCron.nextDate('0 0 1,15 * 3',    new Date('25 Sep 2020 12:00:00 GMT')).toUTCString()).to.equal(new Date('01 Sep 2021 00:00:00 GMT').toUTCString());
+		expect(parseCron.nextDate('* * * * mon',     new Date('01 Jan 2020 00:00:00 GMT'))!.toUTCString()).to.equal(new Date('06 Jan 2020 00:00:00 GMT').toUTCString());
+		expect(parseCron.nextDate('* * 1 1 sun',     new Date('01 Jan 2020 00:00:00 GMT'))!.toUTCString()).to.equal(new Date('01 Jan 2023 00:00:00 GMT').toUTCString());
+		expect(parseCron.nextDate('5 4 * * sun',     new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).to.equal(new Date('27 Sep 2020 04:05:00 GMT').toUTCString());
+		expect(parseCron.nextDate('0 22 * * 1-5',    new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).to.equal(new Date('25 Sep 2020 22:00:00 GMT').toUTCString());
+		expect(parseCron.nextDate('0 0 1,15 * 3',    new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).to.equal(new Date('01 Sep 2021 00:00:00 GMT').toUTCString());
 	}); // }}}
 
 	it("works with cron schedules objects", () => { // {{{
@@ -246,7 +245,7 @@ describe("parseCron.nextDate", () => {
 			days:     all.days,
 			months:   [8],
 			weekDays: all.weekDays,
-		}, new Date('25 Sep 2020 12:00:00 GMT')).toUTCString()).to.equal(new Date('01 Aug 2021 00:05:00 GMT').toUTCString());
+		}, new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).to.equal(new Date('01 Aug 2021 00:05:00 GMT').toUTCString());
 
 		expect(parseCron.nextDate({
 			minutes:  [15],
@@ -254,7 +253,7 @@ describe("parseCron.nextDate", () => {
 			days:     [1],
 			months:   all.months,
 			weekDays: all.weekDays,
-		}, new Date('25 Sep 2020 12:00:00 GMT')).toUTCString()).to.equal(new Date('01 Oct 2020 14:15:00 GMT').toUTCString());
+		}, new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).to.equal(new Date('01 Oct 2020 14:15:00 GMT').toUTCString());
 
 		expect(parseCron.nextDate({
 			minutes:  [23],
@@ -262,6 +261,6 @@ describe("parseCron.nextDate", () => {
 			days:     all.days,
 			months:   all.months,
 			weekDays: all.weekDays,
-		}, new Date('25 Sep 2020 12:00:00 GMT')).toUTCString()).to.equal(new Date('25 Sep 2020 12:23:00 GMT').toUTCString());
+		}, new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).to.equal(new Date('25 Sep 2020 12:23:00 GMT').toUTCString());
 	}); // }}}
 });
