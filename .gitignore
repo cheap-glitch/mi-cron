@@ -4,8 +4,8 @@ node_modules
 npm-debug.log
 
 # Code coverage
-.codecov.yml
-.coverage
+/.coverage/
+/.coveralls.yml
 
 # Build artifacts
 /build/

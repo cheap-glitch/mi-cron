@@ -2,7 +2,7 @@
 
 ![License](https://badgen.net/github/license/cheap-glitch/mi-cron?color=green)
 ![Latest release](https://badgen.net/github/release/cheap-glitch/mi-cron?color=green)
-[![Coverage status](https://codecov.io/gh/cheap-glitch/mi-cron/graph/badge.svg)](https://codecov.io/gh/cheap-glitch/mi-cron)
+[![Coverage status](https://coveralls.io/repos/github/cheap-glitch/mi-cron/badge.svg?branch=main)](https://coveralls.io/github/cheap-glitch/mi-cron?branch=main)
 
 ```javascript
 const { parseCron } = require('@cheap-glitch/mi-cron');

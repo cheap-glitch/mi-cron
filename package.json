@@ -26,13 +26,14 @@
     "build": "npm run build:ts && npm run build:minify",
     "build:minify": "terser --compress --mangle toplevel --comments '/^!/' --output build/index.min.js -- build/index.js",
     "build:ts": "tsc",
-    "coverage": "jest --coverage",
-    "coverage:report": "npm run coverage && codecov --disable=gcov",
     "lint": "eslint . --ext .ts --ignore-path .gitignore",
-    "test": "jest"
+    "prepublishOnly": "npm run build",
+    "test": "jest",
+    "upload:coverage": "coveralls < .coverage/lcov.info"
   },
   "jest": {
     "preset": "ts-jest",
+    "collectCoverage": true,
     "coverageDirectory": ".coverage"
   },
   "devDependencies": {
