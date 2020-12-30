@@ -1,16 +1,10 @@
 import { parseCron } from '../src/index';
-
-const all = {
-	minutes:  Array.from({ length: 60 }).map((_, i) => i),
-	hours:    Array.from({ length: 24 }).map((_, i) => i),
-	days:     Array.from({ length: 31 }).map((_, i) => i + 1),
-	months:   Array.from({ length: 12 }).map((_, i) => i + 1),
-	weekDays: Array.from({ length:  7 }).map((_, i) => i),
-};
+import { all } from './helpers';
 
 describe("parseCron", () => {
 
 	it("returns `undefined` when given an invalid cron expression", () => { // {{{
+
 		// Not enough fields
 		expect(parseCron('')).toBeUndefined();
 		expect(parseCron('* * *')).toBeUndefined();
@@ -55,9 +49,11 @@ describe("parseCron", () => {
 
 		// Invalid steps
 		expect(parseCron('*/a * * * *')).toBeUndefined();
+
 	}); // }}}
 
 	it("parses standard cron expressions", () => { // {{{
+
 		expect(parseCron('   * *   *\t*\t \t*')).toEqual({
 			minutes:  all.minutes,
 			hours:    all.hours,
@@ -108,9 +104,11 @@ describe("parseCron", () => {
 			months:   all.months,
 			weekDays: [3],
 		});
+
 	}); // }}}
 
 	it("supports step values", () => { // {{{
+
 		expect(parseCron('*/5 * * * *')).toEqual({
 			minutes:  [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55],
 			hours:    all.hours,
@@ -155,9 +153,11 @@ describe("parseCron", () => {
 			months:   all.months,
 			weekDays: [1, 3, 5],
 		});
+
 	}); // }}}
 
 	it("supports most @-shorthands", () => { // {{{
+
 		expect(parseCron('@hourly')).toEqual({
 			minutes:  [0],
 			hours:    all.hours,
@@ -193,6 +193,7 @@ describe("parseCron", () => {
 			months:   [1],
 			weekDays: all.weekDays,
 		});
+
 	}); // }}}
 
 });
@@ -200,6 +201,7 @@ describe("parseCron", () => {
 describe("parseCron.nextDate", () => {
 
 	it("returns `undefined` when given an invalid cron expression", () => { // {{{
+
 		expect(parseCron.nextDate('* * *')).toBeUndefined();
 		expect(parseCron.nextDate('0 0 1 1 * 3000')).toBeUndefined();
 		expect(parseCron.nextDate('* * * * 5#3')).toBeUndefined();
@@ -212,9 +214,11 @@ describe("parseCron.nextDate", () => {
 		expect(parseCron.nextDate('* 0-100 * * *')).toBeUndefined();
 		expect(parseCron.nextDate('* 23-0 * * *')).toBeUndefined();
 		expect(parseCron.nextDate('*/a * * * *')).toBeUndefined();
+
 	}); // }}}
 
 	it("gives the correct next scheduled date", () => { // {{{
+
 		expect(parseCron.nextDate('* * * * *',       new Date('01 Jan 2020 00:00:00 GMT'))!.toUTCString()).toBe(new Date('01 Jan 2020 00:01:00 GMT').toUTCString());
 		expect(parseCron.nextDate('0 * * * *',       new Date('01 Jan 2020 00:00:00 GMT'))!.toUTCString()).toBe(new Date('01 Jan 2020 01:00:00 GMT').toUTCString());
 		expect(parseCron.nextDate('*/5 * * * *',     new Date('01 Jan 2020 00:01:00 GMT'))!.toUTCString()).toBe(new Date('01 Jan 2020 00:05:00 GMT').toUTCString());
@@ -227,17 +231,21 @@ describe("parseCron.nextDate", () => {
 		expect(parseCron.nextDate('0 0,12 1 */2 *',  new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).toBe(new Date('01 Nov 2020 00:00:00 GMT').toUTCString());
 		expect(parseCron.nextDate('0 4 8-14 * *',    new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).toBe(new Date('08 Oct 2020 04:00:00 GMT').toUTCString());
 		expect(parseCron.nextDate('@weekly',         new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).toBe(new Date('27 Sep 2020 00:00:00 GMT').toUTCString());
+
 	}); // }}}
 
 	it("supports week days", () => { // {{{
+
 		expect(parseCron.nextDate('* * * * mon',     new Date('01 Jan 2020 00:00:00 GMT'))!.toUTCString()).toBe(new Date('06 Jan 2020 00:00:00 GMT').toUTCString());
 		expect(parseCron.nextDate('* * 1 1 sun',     new Date('01 Jan 2020 00:00:00 GMT'))!.toUTCString()).toBe(new Date('01 Jan 2023 00:00:00 GMT').toUTCString());
 		expect(parseCron.nextDate('5 4 * * sun',     new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).toBe(new Date('27 Sep 2020 04:05:00 GMT').toUTCString());
 		expect(parseCron.nextDate('0 22 * * 1-5',    new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).toBe(new Date('25 Sep 2020 22:00:00 GMT').toUTCString());
 		expect(parseCron.nextDate('0 0 1,15 * 3',    new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).toBe(new Date('01 Sep 2021 00:00:00 GMT').toUTCString());
+
 	}); // }}}
 
 	it("works with cron schedule objects", () => { // {{{
+
 		expect(parseCron.nextDate({
 			minutes:  [5],
 			hours:    [0],
@@ -261,5 +269,7 @@ describe("parseCron.nextDate", () => {
 			months:   all.months,
 			weekDays: all.weekDays,
 		}, new Date('25 Sep 2020 12:00:00 GMT'))!.toUTCString()).toBe(new Date('25 Sep 2020 12:23:00 GMT').toUTCString());
+
 	}); // }}}
+
 });
