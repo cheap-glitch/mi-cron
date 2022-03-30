@@ -28,22 +28,33 @@
     "week",
     "weekday"
   ],
-  "main": "./build/index.min.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "build": "npm run build:ts && npm run build:minify",
-    "build:minify": "terser --compress --mangle toplevel --comments '/^!/' --output build/index.min.js -- build/index.js",
-    "build:ts": "tsc",
+    "build": "tsc",
+    "build:clean": "empty-dir dist && npm run build",
+    "build:watch": "tsc --watch",
+    "coverage": "npm test -- --collectCoverage",
+    "coverage:upload": "coveralls < .coverage/lcov.info",
     "lint": "eslint . --ext .ts --ignore-path .gitignore",
-    "prepublishOnly": "npm run build",
-    "test": "jest",
-    "upload:coverage": "coveralls < .coverage/lcov.info"
+    "test": "jest --runInBand",
+    "test:watch": "npm test -- --watch"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": "@cheap-glitch/typescript",
+    "env": {
+      "es6": true
+    }
   },
   "jest": {
     "preset": "ts-jest",
-    "collectCoverage": true,
     "coverageDirectory": ".coverage"
   },
   "devDependencies": {

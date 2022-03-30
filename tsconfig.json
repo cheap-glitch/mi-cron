@@ -1,19 +1,12 @@
 {
-  "files": ["./src/index.ts"],
+  "extends": "@cheap-glitch/tsconfig/index.json",
+  "files": [
+    "src/index.ts"
+  ],
   "compilerOptions": {
-    "outDir":                     "./build",
-    "module":                     "commonjs",
-    "target":                     "es2018",
-    "lib":                        ["es2019"],
-    "strict":                     true,
-		"noEmitOnError":              true,
-		"noFallthroughCasesInSwitch": true,
-		"noUnusedParameters":         true,
-    "downlevelIteration":         true,
-    "noImplicitAny":              true,
-    "noImplicitReturns":          true,
-    "noImplicitThis":             true,
-    "noUnusedLocals":             true,
-    "removeComments":             true
+    "lib": ["es2019"],
+    "target": "es2018",
+    "module": "commonjs",
+    "outDir": "dist"
   }
 }
