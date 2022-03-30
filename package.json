@@ -1,22 +1,32 @@
 {
   "name": "@cheap-glitch/mi-cron",
-  "description": "A microscopic parser for standard cron expressions.",
   "version": "1.0.1",
+  "description": "A microscopic parser for standard cron expressions.",
   "license": "ISC",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/cheap-glitch/mi-cron.git"
-  },
-  "bugs": {
-    "url": "https://github.com/cheap-glitch/mi-cron/issues"
-  },
   "author": "cheap glitch <cheap.glitch@gmail.com> (https://github.com/cheap-glitch)",
+  "repository": "cheap-glitch/mi-cron",
   "homepage": "https://github.com/cheap-glitch/mi-cron#readme",
+  "bugs": "https://github.com/cheap-glitch/mi-cron/issues",
+  "funding": "https://github.com/sponsors/cheap-glitch",
   "keywords": [
     "cron",
-    "cron-expression",
+    "crontab",
     "crontable",
-    "parser"
+    "date",
+    "day",
+    "hour",
+    "hours",
+    "lightweight",
+    "micro",
+    "minutes",
+    "month",
+    "parser",
+    "schedule",
+    "scheduling",
+    "small",
+    "tiny",
+    "week",
+    "weekday"
   ],
   "main": "./build/index.min.js",
   "directories": {
