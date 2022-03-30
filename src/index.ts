@@ -38,11 +38,11 @@ const shorthands: { [index: string]: string } = {
 export function parseCron(exp: string): CronSchedule | undefined {
 	const fields = exp.trim().split(/\s+/);
 
-	if (fields.length == 1) {
+	if (fields.length === 1) {
 		return (fields[0] in shorthands) ? parseCron(shorthands[fields[0]]) : undefined;
 	}
 
-	if (fields.length == 5) {
+	if (fields.length === 5) {
 		let schedule = undefined;
 
 		try {
@@ -63,26 +63,26 @@ export function parseCron(exp: string): CronSchedule | undefined {
 	return undefined;
 }
 
-const boundary     = '(\\d{1,2}|[a-z]{3})'
+const boundary     = '(\\d{1,2}|[a-z]{3})';
 const rangePattern = new RegExp(`^${boundary}(?:-${boundary})?$`, 'i');
 
 function parseField(field: string, min: number, max: number, aliases: string[] = []): number[] {
 	// Parse every item of the comma-separated list, merge the values and remove duplicates
-	const values = Array.from(new Set(field.split(',').flatMap(item => {
+	const values = [...new Set(field.split(',').flatMap(item => {
 		const [exp, stepStr = '1'] = item.split('/', 2);
 
-		const step = parseInt(stepStr, 10);
+		const step = Number.parseInt(stepStr, 10);
 		if (Number.isNaN(step)) {
-			throw Error();
+			throw new TypeError();
 		}
 
-		if (exp == '*') {
+		if (exp === '*') {
 			return range(min, max, step);
 		}
 
 		const matches = exp.match(rangePattern);
 		if (!matches) {
-			throw Error();
+			throw new Error();
 		}
 
 		const [start, stop = item.includes('/') ? max : undefined] = matches.slice(1).map(match => {
@@ -90,18 +90,18 @@ function parseField(field: string, min: number, max: number, aliases: string[] =
 				return aliases.indexOf(match);
 			}
 
-			const value = parseInt(match, 10);
+			const value = Number.parseInt(match, 10);
 
 			return (!Number.isNaN(value) && min <= value && value <= max) ? value : undefined;
 		});
 
 		// Invalid range
 		if (start === undefined || (stop !== undefined && stop < start)) {
-			throw Error();
+			throw new Error();
 		}
 
-		return stop == undefined ? [start] : range(start, stop, step);
-	})));
+		return stop === undefined ? [start] : range(start, stop, step);
+	}))];
 
 	// Sort the array numerically
 	// The sort function is needed to avoid the default conversion into strings (which would give e.g. [10, 2])
@@ -112,7 +112,7 @@ function parseField(field: string, min: number, max: number, aliases: string[] =
 
 // Return the closest date and time matched by the cron schedule, or `undefined` if the schedule is deemed invalid
 parseCron.nextDate = function(exp: string | CronSchedule, from = new Date()): Date | undefined {
-	const schedule = typeof exp == 'string' ? parseCron(exp) : exp;
+	const schedule = typeof exp === 'string' ? parseCron(exp) : exp;
 	if (schedule === undefined) {
 		return undefined;
 	}
@@ -151,12 +151,12 @@ parseCron.nextDate = function(exp: string | CronSchedule, from = new Date()): Da
 				date[dials[i-1]]++;
 
 				// Go back to the previous dial (unless we're at the months)
-				i = (dial != 'months') ? (i - 2) : i;
+				i = (dial !== 'months') ? (i - 2) : i;
 			}
 		}
 
 		// Make sure the selected day is one of the possible weekdays
-		if (dial == 'days' && !schedule.weekDays.includes(cronDateToUTC(date).getUTCDay())) {
+		if (dial === 'days' && !schedule.weekDays.includes(cronDateToUTC(date).getUTCDay())) {
 			date.days++;
 			date.hours   = schedule.hours[0];
 			date.minutes = schedule.minutes[0];
@@ -165,7 +165,7 @@ parseCron.nextDate = function(exp: string | CronSchedule, from = new Date()): Da
 	}
 
 	return cronDateToUTC(date);
-}
+};
 
 function cronDateToUTC(date: CronDate): Date {
 	return new Date(Date.UTC(date.years, date.months - 1, date.days, date.hours, date.minutes));
