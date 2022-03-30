@@ -1,12 +1,5 @@
-# npm
-.npmrc
-node_modules
-npm-debug.log
-
-# Code coverage
+*.env
 /.coverage/
 /.coveralls.yml
-
-# Build artifacts
-/build/
-index*.js
+/dist/
+/node_modules/
