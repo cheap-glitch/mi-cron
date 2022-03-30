@@ -1,26 +1,32 @@
 # 📆 mi-cron
 
-![License](https://badgen.net/github/license/cheap-glitch/mi-cron?color=green)
-![Latest release](https://badgen.net/github/release/cheap-glitch/mi-cron?color=green)
-[![Coverage status](https://coveralls.io/repos/github/cheap-glitch/mi-cron/badge.svg?branch=main)](https://coveralls.io/github/cheap-glitch/mi-cron?branch=main)
+[![License](https://shields.io/github/license/cheap-glitch/mi-cron)](LICENSE)
+[![Latest release](https://shields.io/github/v/release/cheap-glitch/mi-cron?sort=semver&label=latest%20release&color=green)](https://github.com/cheap-glitch/mi-cron/releases/latest)
+[![Coverage status](https://shields.io/coveralls/github/cheap-glitch/mi-cron)](https://coveralls.io/github/cheap-glitch/mi-cron)
+
+**mi-cron** is a microscopic ([~1KB minified & gzipped](https://bundlephobia.com/result?p=@cheap-glitch/mi-cron))
+parser for [standard cron expressions](https://en.wikipedia.org/wiki/Cron#CRON_expression).
+
+## Features
+
+ * Supports the complete standard cron syntax
+ * Supports some convenient syntax extensions: @-shorthands (`@daily`) and steps (`*/10`)
+ * Can compute the next scheduled date for a given expression
+ * Tiny & dependency-free
+
+## Installation
+
+```
+npm i @cheap-glitch/mi-cron
+```
+
+## Usage
 
 ```javascript
 const { parseCron } = require('@cheap-glitch/mi-cron');
 
 console.log(parseCron.nextDate('*/5 6-12 3 3 *').toUTCString());
 // Wed, 03 Mar 2021 06:00:00
-```
-
-This is  a microscopic  (~1KB minified &  gzipped) zero-dependencies  parser for
-[standard cron expressions](https://en.wikipedia.org/wiki/Cron#CRON_expression).
-It  also  supports   a  few  non-standard  but  convenient   features,  such  as
-@-shorthands (e.g. `@daily`)  and steps (e.g. `*/10`), and can  compute the next
-scheduled date for a given expression.
-
-## Installation
-
-```shell
-npm i @cheap-glitch/mi-cron
 ```
 
 ## API
@@ -77,26 +83,20 @@ for (let i=0; i<5; i++) {
 }
 ```
 
+## Changelog
+
+See the full changelog [here](https://github.com/cheap-glitch/devlint/releases).
+
+## Contributing
+
+Contributions are welcomed! Please open an issue before submitting substantial changes.
+
 ## Related
 
- * [crontab.guru](https://crontab.guru), an interactive cron schedule editor
- * [A description of the crontab format](https://crontab.guru/crontab.5.html)
+ * [crontab.guru](https://crontab.guru) – Interactive cron schedule editor
+ * [Description of the crontab format](https://crontab.guru/crontab.5.html)
  * [Best practices for cron](https://www.endpoint.com/blog/2008/12/08/best-practices-for-cron)
 
 ## License
 
-```text
-Copyright (c) 2020-present, cheap glitch
-
-Permission to use, copy, modify, and/or distribute this software for any purpose
-with or without fee is hereby  granted, provided that the above copyright notice
-and this permission notice appear in all copies.
-
-THE SOFTWARE  IS PROVIDED "AS IS"  AND THE AUTHOR DISCLAIMS  ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING  ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
-FITNESS.  IN NO  EVENT  SHALL THE  AUTHOR  BE LIABLE  FOR  ANY SPECIAL,  DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
-OF USE, DATA OR  PROFITS, WHETHER IN AN ACTION OF  CONTRACT, NEGLIGENCE OR OTHER
-TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION WITH THE USE OR PERFORMANCE OF
-THIS SOFTWARE.
-```
+ISC
