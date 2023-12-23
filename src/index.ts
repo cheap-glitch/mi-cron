@@ -36,7 +36,7 @@ const shorthands: { [index: string]: string } = {
 
 // Return a schedule as a collection of numerical arrays, or `undefined` if the cron expression is deemed invalid
 export function parseCron(exp: string): CronSchedule | undefined {
-	const fields = exp.trim().split(/\s+/);
+	const fields = exp.trim().toLowerCase().split(/\s+/);
 
 	if (fields.length === 1) {
 		return (fields[0] in shorthands) ? parseCron(shorthands[fields[0]]) : undefined;
