@@ -90,6 +90,13 @@ describe('parseCron', () => {
 			months:   all.months,
 			weekDays: [0],
 		});
+		expect(parseCron('5 4 * * SAT')).toEqual({
+			minutes:  [5],
+			hours:    [4],
+			days:     all.days,
+			months:   all.months,
+			weekDays: [6],
+		});
 		expect(parseCron('0 4 8-14 * *')).toEqual({
 			minutes:  [0],
 			hours:    [4],
