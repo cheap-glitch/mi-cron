@@ -4,7 +4,7 @@
 [![Latest release](https://shields.io/github/v/release/cheap-glitch/mi-cron?sort=semver&label=latest%20release&color=green)](https://github.com/cheap-glitch/mi-cron/releases/latest)
 [![Coverage status](https://shields.io/coveralls/github/cheap-glitch/mi-cron)](https://coveralls.io/github/cheap-glitch/mi-cron)
 
-**mi-cron** is a microscopic ([~1KB minified & gzipped](https://bundlephobia.com/result?p=@cheap-glitch/mi-cron))
+**mi-cron** is a microscopic ([~1KB minified & gzipped](https://bundlephobia.com/result?p=@fregante/mi-cron))
 parser for [standard cron expressions](https://en.wikipedia.org/wiki/Cron#CRON_expression).
 
 ## Features
@@ -17,13 +17,13 @@ parser for [standard cron expressions](https://en.wikipedia.org/wiki/Cron#CRON_e
 ## Installation
 
 ```
-npm i @cheap-glitch/mi-cron
+npm i @fregante/mi-cron
 ```
 
 ## Usage
 
 ```javascript
-const { parseCron } = require('@cheap-glitch/mi-cron');
+const { parseCron } = require('@fregante/mi-cron');
 
 console.log(parseCron.nextDate('*/5 6-12 3 3 *').toUTCString());
 // Wed, 03 Mar 2021 06:00:00
@@ -50,7 +50,7 @@ months and days of the week), or `undefined` if the expression is invalid (wrong
 syntax, unsupported instruction, impossible range, etc).
 
 ```javascript
-const { parseCron } = require('@cheap-glitch/mi-cron');
+const { parseCron } = require('@fregante/mi-cron');
 
 console.log(parseCron('*/5 6-10 1,15 * wed'));
 // {
@@ -70,7 +70,7 @@ the second argument, it will start  the computation from this time (otherwise it
 will use the current datetime at the moment it's called).
 
 ```javascript
-const { parseCron } = require('@cheap-glitch/mi-cron');
+const { parseCron } = require('@fregante/mi-cron');
 
 console.log(parseCron.nextDate('* * * * *', new Date('01 Jan 2020 00:00:00 GMT')).toUTCString());
 // Wed, 01 Jan 2020 00:01:00

@@ -1,5 +1,5 @@
 {
-  "name": "@cheap-glitch/mi-cron",
+  "name": "@fregante/mi-cron",
   "version": "1.0.1",
   "description": "A microscopic parser for standard cron expressions.",
   "license": "ISC",
