@@ -1,6 +1,6 @@
 {
   "name": "@fregante/mi-cron",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "A microscopic parser for standard cron expressions.",
   "license": "ISC",
   "author": "cheap glitch <cheap.glitch@gmail.com> (https://github.com/cheap-glitch)",
