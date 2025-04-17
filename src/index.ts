@@ -42,38 +42,34 @@ export function parseCron(exp: string): CronSchedule | undefined {
 		return fields[0] in shorthands ? parseCron(shorthands[fields[0]]) : undefined;
 	}
 
-	if (fields.length === 5) {
-		let schedule = undefined;
-
-		try {
-			schedule = {
-				minutes: parseField(fields[0], 0, 59),
-				hours: parseField(fields[1], 0, 23),
-				days: parseField(fields[2], 1, 31),
-				months: parseField(fields[3], 1, 12, [
-					'jan',
-					'feb',
-					'mar',
-					'apr',
-					'may',
-					'jun',
-					'jul',
-					'aug',
-					'sep',
-					'oct',
-					'nov',
-					'dec',
-				]),
-				weekDays: parseField(fields[4], 0, 6, ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']),
-			};
-		} catch {
-			return undefined;
-		}
-
-		return schedule;
+	if (fields.length !== 5) {
+		return undefined;
 	}
 
-	return undefined;
+	try {
+		return {
+			minutes: parseField(fields[0], 0, 59),
+			hours: parseField(fields[1], 0, 23),
+			days: parseField(fields[2], 1, 31),
+			months: parseField(fields[3], 1, 12, [
+				'jan',
+				'feb',
+				'mar',
+				'apr',
+				'may',
+				'jun',
+				'jul',
+				'aug',
+				'sep',
+				'oct',
+				'nov',
+				'dec',
+			]),
+			weekDays: parseField(fields[4], 0, 6, ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']),
+		};
+	} catch {
+		return undefined;
+	}
 }
 
 const boundary = '(\\d{1,2}|[a-z]{3})';
