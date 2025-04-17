@@ -1,12 +1,17 @@
 {
-  "extends": "@cheap-glitch/tsconfig/index.json",
-  "files": [
-    "src/index.ts"
-  ],
-  "compilerOptions": {
-    "lib": ["es2022"],
-    "target": "es2022",
-    "module": "es2022",
-    "outDir": "dist"
-  }
+	"include": ["src"],
+	"compilerOptions": {
+		"lib": ["es2022"],
+		"target": "es2022",
+		"module": "es2022",
+		"outDir": "dist",
+		"esModuleInterop": true,
+		"isolatedModules": true,
+		"strict": true,
+		"noImplicitAny": false,
+		"noImplicitThis": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedSideEffectImports": true,
+		"useDefineForClassFields": true
+	}
 }
