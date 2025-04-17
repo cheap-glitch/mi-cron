@@ -1,5 +1,5 @@
-*.env
 /.coverage/
-/.coveralls.yml
 /dist/
 /node_modules/
+/.coveralls.yml
+*.env
