@@ -4,9 +4,9 @@
     "src/index.ts"
   ],
   "compilerOptions": {
-    "lib": ["es2019"],
-    "target": "es2018",
-    "module": "commonjs",
+    "lib": ["es2022"],
+    "target": "es2022",
+    "module": "es2022",
     "outDir": "dist"
   }
 }
